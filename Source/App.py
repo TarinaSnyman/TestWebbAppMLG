@@ -53,43 +53,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Ethnicity
-            html.Div(
-                [
-                    html.Label("Ethnicity", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                    dcc.Dropdown(
-                        id='ethnicity',
-                        options=[
-                            {'label': 'Caucasian', 'value': 0},
-                            {'label': 'African American', 'value': 1},
-                            {'label': 'Asian', 'value': 2},
-                            {'label': 'Other', 'value': 3}
-                        ],
-                        value=0,
-                        style={'width': '100%'}
-                    )
-                ],
-                style={'marginBottom': '15px'}
-            ),
-            # Parental Education
-            html.Div(
-                [
-                    html.Label("Parental Education", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                    dcc.Dropdown(
-                        id='parental_education',
-                        options=[
-                            {'label': 'None', 'value': 0},
-                            {'label': 'High School', 'value': 1},
-                            {'label': 'Some College', 'value': 2},
-                            {'label': "Bachelor's", 'value': 3},
-                            {'label': 'Higher Study', 'value': 4}
-                        ],
-                        value=2,
-                        style={'width': '100%'}
-                    )
-                ],
-                style={'marginBottom': '15px'}
-            ),
             # Study Time
             html.Div(
                 [
@@ -138,74 +101,6 @@ app.layout = html.Div([
                         ],
                         value=3,
                         style={'width': '100%'}
-                    )
-                ],
-                style={'marginBottom': '15px'}
-            ),
-            # Extracurricular
-            html.Div(
-                [
-                    html.Label("Participates in Extracurricular", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                    dcc.RadioItems(
-                        id='extracurricular',
-                        options=[
-                            {'label': 'Yes', 'value': 1},
-                            {'label': 'No', 'value': 0}
-                        ],
-                        value=0,
-                        inline=True,
-                        style={'marginTop': '5px'}
-                    )
-                ],
-                style={'marginBottom': '15px'}
-            ),
-            # Sports
-            html.Div(
-                [
-                    html.Label("Participates in Sports", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                    dcc.RadioItems(
-                        id='sports',
-                        options=[
-                            {'label': 'Yes', 'value': 1},
-                            {'label': 'No', 'value': 0}
-                        ],
-                        value=0,
-                        inline=True,
-                        style={'marginTop': '5px'}
-                    )
-                ],
-                style={'marginBottom': '15px'}
-            ),
-            # Music
-            html.Div(
-                [
-                    html.Label("Participates in Music", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                    dcc.RadioItems(
-                        id='music',
-                        options=[
-                            {'label': 'Yes', 'value': 1},
-                            {'label': 'No', 'value': 0}
-                        ],
-                        value=0,
-                        inline=True,
-                        style={'marginTop': '5px'}
-                    )
-                ],
-                style={'marginBottom': '15px'}
-            ),
-            # Volunteering
-            html.Div(
-                [
-                    html.Label("Participates in Volunteering", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
-                    dcc.RadioItems(
-                        id='volunteering',
-                        options=[
-                            {'label': 'Yes', 'value': 1},
-                            {'label': 'No', 'value': 0}
-                        ],
-                        value=0,
-                        inline=True,
-                        style={'marginTop': '5px'}
                     )
                 ],
                 style={'marginBottom': '15px'}

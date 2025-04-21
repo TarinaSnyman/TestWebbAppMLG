@@ -270,22 +270,28 @@ def predict(n_clicks, age, gender, ethnicity, parental_education, study_time, ab
     if any(x is None for x in inputs):
         return html.H3("Please fill in all fields.", style={'color': 'red'})
     
-    # Prepare input data in the same order as training features
-    input_data = pd.DataFrame([[age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]],
-                              columns=['Age', 'Gender', 'Ethnicity', 'ParentalEducation', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'Extracurricular', 'Sports', 'Music', 'Volunteering', 'GPA'])
+    # Prepare input data with the 13 original features
+    input_data = pd.DataFrame(
+        [[age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]],
+        columns=['Age', 'Gender', 'Ethnicity', 'ParentalEducation', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'Extracurricular', 'Sports', 'Music', 'Volunteering', 'GPA']
+    )
     
-    # Scale the input data using the same scaler used during training
+    # Scale the 13 features using the scaler fitted on 13 features
     input_scaled = scaler.transform(input_data)
-
-    StudentDiscriptors = float(input_scaled[0][0]) + float(input_scaled[0][1]) + float(input_scaled[0][2]) + float(input_scaled[0][3])
-    Activity = float(input_scaled[0][8]) + float(input_scaled[0][9]) + float(input_scaled[0][10]) + float(input_scaled[0][11])
+    input_scaled_df = pd.DataFrame(input_scaled, columns=input_data.columns)
     
-    #StudyTimeWeekly    Absences    Tutoring    ParentalSupport    GPA    Activity    StudentDiscriptors
-    completed_Data = pd.DataFrame([[study_time, absences, tutoring, parental_support, gpa, Activity, StudentDiscriptors]], 
-                                  columns=['StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'GPA', 'Activity', 'StudentDiscriptors'])
+    # Compute derived features from scaled data
+    student_descriptors = float(input_scaled_df['Age'][0]) + float(input_scaled_df['Gender'][0]) + float(input_scaled_df['Ethnicity'][0]) + float(input_scaled_df['ParentalEducation'][0])
+    activity = float(input_scaled_df['Extracurricular'][0]) + float(input_scaled_df['Sports'][0]) + float(input_scaled_df['Music'][0]) + float(input_scaled_df['Volunteering'][0])
+    
+    # Prepare final input with the 7 features
+    completed_data = pd.DataFrame(
+        [[input_scaled_df['StudyTimeWeekly'][0], input_scaled_df['Absences'][0], input_scaled_df['Tutoring'][0], input_scaled_df['ParentalSupport'][0], input_scaled_df['GPA'][0], activity, student_descriptors]],
+        columns=['StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'GPA', 'Activity', 'StudentDiscriptors']
+    )
     
     # Make prediction
-    prediction = model.predict(completed_Data)[0]
+    prediction = model.predict(completed_data)[0]
     grades = ['A', 'B', 'C', 'D', 'F']
     predicted_grade = grades[int(prediction)]
     

@@ -53,6 +53,43 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
+            # Ethnicity
+            html.Div(
+                [
+                    html.Label("Ethnicity", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        id='ethnicity',
+                        options=[
+                            {'label': 'Caucasian', 'value': 0},
+                            {'label': 'African American', 'value': 1},
+                            {'label': 'Asian', 'value': 2},
+                            {'label': 'Other', 'value': 3}
+                        ],
+                        value=0,
+                        style={'width': '100%'}
+                    )
+                ],
+                style={'marginBottom': '15px'}
+            ),
+            # Parental Education
+            html.Div(
+                [
+                    html.Label("Parental Education", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.Dropdown(
+                        id='parental_education',
+                        options=[
+                            {'label': 'None', 'value': 0},
+                            {'label': 'High School', 'value': 1},
+                            {'label': 'Some College', 'value': 2},
+                            {'label': "Bachelor's", 'value': 3},
+                            {'label': 'Higher Study', 'value': 4}
+                        ],
+                        value=2,
+                        style={'width': '100%'}
+                    )
+                ],
+                style={'marginBottom': '15px'}
+            ),
             # Study Time
             html.Div(
                 [
@@ -101,6 +138,74 @@ app.layout = html.Div([
                         ],
                         value=3,
                         style={'width': '100%'}
+                    )
+                ],
+                style={'marginBottom': '15px'}
+            ),
+            # Extracurricular
+            html.Div(
+                [
+                    html.Label("Participates in Extracurricular", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.RadioItems(
+                        id='extracurricular',
+                        options=[
+                            {'label': 'Yes', 'value': 1},
+                            {'label': 'No', 'value': 0}
+                        ],
+                        value=0,
+                        inline=True,
+                        style={'marginTop': '5px'}
+                    )
+                ],
+                style={'marginBottom': '15px'}
+            ),
+            # Sports
+            html.Div(
+                [
+                    html.Label("Participates in Sports", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.RadioItems(
+                        id='sports',
+                        options=[
+                            {'label': 'Yes', 'value': 1},
+                            {'label': 'No', 'value': 0}
+                        ],
+                        value=0,
+                        inline=True,
+                        style={'marginTop': '5px'}
+                    )
+                ],
+                style={'marginBottom': '15px'}
+            ),
+            # Music
+            html.Div(
+                [
+                    html.Label("Participates in Music", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.RadioItems(
+                        id='music',
+                        options=[
+                            {'label': 'Yes', 'value': 1},
+                            {'label': 'No', 'value': 0}
+                        ],
+                        value=0,
+                        inline=True,
+                        style={'marginTop': '5px'}
+                    )
+                ],
+                style={'marginBottom': '15px'}
+            ),
+            # Volunteering
+            html.Div(
+                [
+                    html.Label("Participates in Volunteering", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
+                    dcc.RadioItems(
+                        id='volunteering',
+                        options=[
+                            {'label': 'Yes', 'value': 1},
+                            {'label': 'No', 'value': 0}
+                        ],
+                        value=0,
+                        inline=True,
+                        style={'marginTop': '5px'}
                     )
                 ],
                 style={'marginBottom': '15px'}
@@ -156,24 +261,31 @@ app.layout = html.Div([
      Input('volunteering', 'value'),
      Input('gpa', 'value')]
 )
-def predict(n_clicks, age, gender, study_time, absences, tutoring, parental_support, gpa):
+def predict(n_clicks, age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa):
     if n_clicks is None:
         return ""
     
     # Validate inputs
-    inputs = [age, gender, study_time, absences, tutoring, parental_support, gpa]
+    inputs = [age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]
     if any(x is None for x in inputs):
         return html.H3("Please fill in all fields.", style={'color': 'red'})
     
     # Prepare input data in the same order as training features
-    input_data = pd.DataFrame([[age, gender, study_time, absences, tutoring, parental_support, gpa]],
-                              columns=['Age', 'Gender', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'GPA'])
+    input_data = pd.DataFrame([[age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]],
+                              columns=['Age', 'Gender', 'Ethnicity', 'ParentalEducation', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'Extracurricular', 'Sports', 'Music', 'Volunteering', 'GPA'])
     
     # Scale the input data using the same scaler used during training
     input_scaled = scaler.transform(input_data)
+
+    StudentDiscriptors = float(input_scaled[0][0]) + float(input_scaled[0][1]) + float(input_scaled[0][2]) + float(input_scaled[0][3])
+    Activity = float(input_scaled[0][8]) + float(input_scaled[0][9]) + float(input_scaled[0][10]) + float(input_scaled[0][11])
+    
+    #StudyTimeWeekly    Absences    Tutoring    ParentalSupport    GPA    Activity    StudentDiscriptors
+    completed_Data = pd.DataFrame([[study_time, absences, tutoring, parental_support, gpa, Activity, StudentDiscriptors]], 
+                                  columns=['StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'GPA', 'Activity', 'StudentDiscriptors'])
     
     # Make prediction
-    prediction = model.predict(input_scaled)[0]
+    prediction = model.predict(completed_Data)[0]
     grades = ['A', 'B', 'C', 'D', 'F']
     predicted_grade = grades[int(prediction)]
     
@@ -184,3 +296,6 @@ def predict(n_clicks, age, gender, study_time, absences, tutoring, parental_supp
         message = f"Predicted Grade: {predicted_grade}"
     
     return html.H3(message, style={'color': '#2c3e50'})
+
+if __name__ == '__main__':
+    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

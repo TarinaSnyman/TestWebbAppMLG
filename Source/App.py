@@ -261,18 +261,18 @@ app.layout = html.Div([
      Input('volunteering', 'value'),
      Input('gpa', 'value')]
 )
-def predict(n_clicks, age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa):
+def predict(n_clicks, age, gender, study_time, absences, tutoring, parental_support, gpa):
     if n_clicks is None:
         return ""
     
     # Validate inputs
-    inputs = [age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]
+    inputs = [age, gender, study_time, absences, tutoring, parental_support, gpa]
     if any(x is None for x in inputs):
         return html.H3("Please fill in all fields.", style={'color': 'red'})
     
     # Prepare input data in the same order as training features
-    input_data = pd.DataFrame([[age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]],
-                              columns=['Age', 'Gender', 'Ethnicity', 'ParentalEducation', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'Extracurricular', 'Sports', 'Music', 'Volunteering', 'GPA'])
+    input_data = pd.DataFrame([[age, gender, study_time, absences, tutoring, parental_support, gpa]],
+                              columns=['Age', 'Gender', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'GPA'])
     
     # Scale the input data using the same scaler used during training
     input_scaled = scaler.transform(input_data)
@@ -289,6 +289,3 @@ def predict(n_clicks, age, gender, ethnicity, parental_education, study_time, ab
         message = f"Predicted Grade: {predicted_grade}"
     
     return html.H3(message, style={'color': '#2c3e50'})
-
-if __name__ == '__main__':
-    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)

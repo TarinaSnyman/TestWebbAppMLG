@@ -2,18 +2,17 @@ from dash import Dash, dcc, html, Input, Output
 import pandas as pd
 import joblib
 import os
-import numpy as np
 
-# Load the trained Random Forest model and the scaler used during training
+# Load the trained Random Forest model and scaler_13
 model_path = os.path.join(os.path.dirname(__file__), 'randomforest.pkl')
-scaler_path = os.path.join(os.path.dirname(__file__), 'scaler.pkl')
+scaler_13_path = os.path.join(os.path.dirname(__file__), 'scaler_13.pkl')
 model = joblib.load(model_path)
-scaler = joblib.load(scaler_path)
+scaler_13 = joblib.load(scaler_13_path)
 
 app = Dash(__name__)
 server = app.server
 
-# Define the layout with inputs for all 13 features
+# Define the layout
 app.layout = html.Div([
     html.H1(
         "BrightPath Academy: Student Performance Predictor",
@@ -25,10 +24,8 @@ app.layout = html.Div([
             'backgroundColor': 'Green'
         }
     ),
-    
     html.Div(
         [
-            # Age
             html.Div(
                 [
                     html.Label("Age (15-18)", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -36,7 +33,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Gender
             html.Div(
                 [
                     html.Label("Gender", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -53,7 +49,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Ethnicity
             html.Div(
                 [
                     html.Label("Ethnicity", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -71,7 +66,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Parental Education
             html.Div(
                 [
                     html.Label("Parental Education", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -90,7 +84,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Study Time
             html.Div(
                 [
                     html.Label("Weekly Study Time (hours, 0-20)", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -98,7 +91,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Absences
             html.Div(
                 [
                     html.Label("Number of Absences (0-29)", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -106,7 +98,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Tutoring
             html.Div(
                 [
                     html.Label("Receiving Tutoring", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -123,7 +114,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Parental Support
             html.Div(
                 [
                     html.Label("Parental Support", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -142,7 +132,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Extracurricular
             html.Div(
                 [
                     html.Label("Participates in Extracurricular", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -159,7 +148,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Sports
             html.Div(
                 [
                     html.Label("Participates in Sports", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -176,7 +164,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Music
             html.Div(
                 [
                     html.Label("Participates in Music", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -193,7 +180,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Volunteering
             html.Div(
                 [
                     html.Label("Participates in Volunteering", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -210,7 +196,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # GPA
             html.Div(
                 [
                     html.Label("GPA (0-4)", style={'fontWeight': 'bold', 'marginBottom': '5px'}),
@@ -218,7 +203,6 @@ app.layout = html.Div([
                 ],
                 style={'marginBottom': '15px'}
             ),
-            # Predict Button
             html.Div(
                 html.Button('Predict', id='predict-button', style={
                     'width': '100%', 'padding': '10px', 'backgroundColor': '#4CAF50', 'color': 'white', 'border': 'none', 'cursor': 'pointer'
@@ -235,8 +219,6 @@ app.layout = html.Div([
             'backgroundColor': 'white'
         }
     ),
-    
-    # Prediction Output
     html.Div(
         id='prediction-output',
         style={'textAlign': 'center', 'marginTop': '20px', 'fontSize': '20px'}
@@ -271,27 +253,28 @@ def predict(n_clicks, age, gender, ethnicity, parental_education, study_time, ab
         return html.H3("Please fill in all fields.", style={'color': 'red'})
     
     # Prepare input data with the 13 original features
-    input_data = pd.DataFrame(
+    input_data_13 = pd.DataFrame(
         [[age, gender, ethnicity, parental_education, study_time, absences, tutoring, parental_support, extracurricular, sports, music, volunteering, gpa]],
         columns=['Age', 'Gender', 'Ethnicity', 'ParentalEducation', 'StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'Extracurricular', 'Sports', 'Music', 'Volunteering', 'GPA']
     )
     
-    # Scale the 13 features using the scaler fitted on 13 features
-    input_scaled = scaler.transform(input_data)
-    input_scaled_df = pd.DataFrame(input_scaled, columns=input_data.columns)
+    # Scale the 13 features using scaler_13
+    input_scaled_13 = scaler_13.transform(input_data_13)
+    input_scaled_df = pd.DataFrame(input_scaled_13, columns=input_data_13.columns)
     
-    # Compute derived features from scaled data
-    student_descriptors = float(input_scaled_df['Age'][0]) + float(input_scaled_df['Gender'][0]) + float(input_scaled_df['Ethnicity'][0]) + float(input_scaled_df['ParentalEducation'][0])
-    activity = float(input_scaled_df['Extracurricular'][0]) + float(input_scaled_df['Sports'][0]) + float(input_scaled_df['Music'][0]) + float(input_scaled_df['Volunteering'][0])
+    # Compute derived features from scaled inputs
+    activity = input_scaled_df['Extracurricular'].iloc[0] + input_scaled_df['Sports'].iloc[0] + input_scaled_df['Music'].iloc[0] + input_scaled_df['Volunteering'].iloc[0]
+    student_descriptors = input_scaled_df['Age'].iloc[0] + input_scaled_df['Gender'].iloc[0] + input_scaled_df['Ethnicity'].iloc[0] + input_scaled_df['ParentalEducation'].iloc[0]
     
-    # Prepare final input with the 7 features
-    completed_data = pd.DataFrame(
-        [[input_scaled_df['StudyTimeWeekly'][0], input_scaled_df['Absences'][0], input_scaled_df['Tutoring'][0], input_scaled_df['ParentalSupport'][0], input_scaled_df['GPA'][0], activity, student_descriptors]],
+    # Prepare input data with the 7 features 
+    input_data_7 = pd.DataFrame(
+        [[input_scaled_df['StudyTimeWeekly'].iloc[0], input_scaled_df['Absences'].iloc[0], input_scaled_df['Tutoring'].iloc[0], 
+          input_scaled_df['ParentalSupport'].iloc[0], input_scaled_df['GPA'].iloc[0], activity, student_descriptors]],
         columns=['StudyTimeWeekly', 'Absences', 'Tutoring', 'ParentalSupport', 'GPA', 'Activity', 'StudentDiscriptors']
     )
     
     # Make prediction
-    prediction = model.predict(completed_data)[0]
+    prediction = model.predict(input_data_7)[0]
     grades = ['A', 'B', 'C', 'D', 'F']
     predicted_grade = grades[int(prediction)]
     
